@@ -4,7 +4,7 @@
 Implementation of "GAMBA: MARRY GAUSSIAN SPLATTING WITH MAMBA FOR SINGLE-VIEW 3D RECONSTRUCTION" in PyToch
 
 ## install
-`$ pip intall gamba`
+`$ pip intall gamba-torch`
 
 ## usage
 ```python

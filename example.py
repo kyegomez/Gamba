@@ -1,5 +1,5 @@
 import torch
-from gamba.main import Gamba
+from gamba_torch.main import Gamba
 
 
 # Forward pass of the GambaDecoder module.
