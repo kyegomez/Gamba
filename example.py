@@ -1,4 +1,4 @@
-import torch 
+import torch
 from gamba.main import Gamba
 
 
@@ -6,13 +6,7 @@ from gamba.main import Gamba
 x = torch.randn(1, 1000, 512)
 
 # Model
-model = Gamba(
-    dim=512,
-    d_state=512,
-    d_conv=512,
-    n=16384,
-    depth=3
-)
+model = Gamba(dim=512, d_state=512, d_conv=512, n=16384, depth=3)
 
 # Out
 out = model(x)

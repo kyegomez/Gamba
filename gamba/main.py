@@ -217,7 +217,7 @@ class Gamba(nn.Module):
 
         """
         img = nn.LayerNorm(self.dim)(img)
-        
+
         for layer in self.layers:
             img = layer(img, img, *args)
 
