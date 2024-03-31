@@ -1,6 +1,7 @@
 import torch
 from torch import nn, Tensor
 from zeta.nn import MambaBlock, FeedForward
+from zeta.structs import ViTransformerWrapper, Encoder
 
 
 def prepend(to_prepend, base):
@@ -183,6 +184,11 @@ class Gamba(nn.Module):
         d_conv: int,
         n: int = 16384,
         depth: int = 8,
+        image_size: int = 256,
+        patch_size: int = 16,
+        encoder_dim: int = 512,
+        encoder_depth: int = 6,
+        encoder_heads: int = 12,
         *args,
         **kwargs,
     ):
@@ -204,6 +210,17 @@ class Gamba(nn.Module):
         # Decoder
         self.decoder = GambaDecoder(dim)
 
+        # Model
+        self.vit_model = ViTransformerWrapper(
+            image_size=image_size,
+            patch_size=patch_size,
+            attn_layers=Encoder(
+                dim=encoder_dim,
+                depth=encoder_depth,
+                heads=encoder_heads,
+            ),
+        )
+
     def forward(self, img: Tensor, *args):
         """
         Forward pass of the Gamba module.
@@ -216,6 +233,9 @@ class Gamba(nn.Module):
             Tensor: Output tensor after passing through the Gamba module.
 
         """
+        # Tokenize
+        img = self.vit_model(img, return_embedding=True)
+
         img = nn.LayerNorm(self.dim)(img)
 
         for layer in self.layers:
