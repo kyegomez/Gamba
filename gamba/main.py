@@ -59,19 +59,20 @@ class GambaBlock(nn.Module):
         mambaed = self.mamba_block(img)
 
         # Drop the img and img_pose_token
-        mambaed = Drop(mambaed, 1)
+        num_tokens_to_drop = img_pose_token.size(1) + img.size(1)
+        mambaed = Drop(mambaed, num_tokens_to_drop)
         print(mambaed.shape)
 
         return mambaed
 
 
-x = torch.randn(1, 64, 512)
+# x = torch.randn(1, 64, 512)
 
-block = GambaBlock(dim=512, d_state=16, d_conv=4, n=16384)
+# block = GambaBlock(dim=512, d_state=16, d_conv=4, n=16384)
 
-out = block(x, x)
+# out = block(x, x)
 
-print(out)
+# print(out)
 
 
 class GambaDecoder(nn.Module):
@@ -151,3 +152,73 @@ class GambaDecoder(nn.Module):
 
 # out = decoder(x)
 # print(out)
+
+
+class Gamba(nn.Module):
+    """
+    Gamba module for image processing.
+
+    Args:
+        dim (int): Dimension of the input image.
+        d_state (int): Dimension of the state.
+        d_conv (int): Dimension of the convolutional layer.
+        n (int, optional): Number of elements in the input image. Defaults to 16384.
+        depth (int, optional): Number of Gamba blocks. Defaults to 3.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+    Attributes:
+        dim (int): Dimension of the input image.
+        d_state (int): Dimension of the state.
+        d_conv (int): Dimension of the convolutional layer.
+        layers (nn.ModuleList): List of Gamba blocks.
+        decoder (GambaDecoder): Gamba decoder.
+
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        d_state: int,
+        d_conv: int,
+        n: int = 16384,
+        depth: int = 8,
+        *args,
+        **kwargs,
+    ):
+        super().__init__()
+        self.dim = dim
+        self.d_state = d_state
+        self.d_conv = d_conv
+
+        # Gamba Layers
+        self.layers = nn.ModuleList(
+            [
+                GambaBlock(
+                    dim=dim, d_state=d_state, d_conv=d_conv, n=n
+                )
+                for _ in range(depth)
+            ]
+        )
+
+        # Decoder
+        self.decoder = GambaDecoder(dim)
+
+    def forward(self, img: Tensor, *args):
+        """
+        Forward pass of the Gamba module.
+
+        Args:
+            img (Tensor): Input image tensor.
+            *args: Variable length argument list.
+
+        Returns:
+            Tensor: Output tensor after passing through the Gamba module.
+
+        """
+        img = nn.LayerNorm(self.dim)(img)
+        
+        for layer in self.layers:
+            img = layer(img, img, *args)
+
+        return self.decoder(img)
