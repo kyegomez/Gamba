@@ -34,3 +34,7 @@ print(out)
 
 # License
 MIT
+
+# Todo
+- [ ] Paper Link
+- [ ] Citation bibtex
