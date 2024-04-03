@@ -234,7 +234,7 @@ class Gamba(nn.Module):
 
         """
         # Tokenize
-        img = self.vit_model(img, return_embedding=True)
+        img = self.vit_model(img, return_embeddings=True)
 
         img = nn.LayerNorm(self.dim)(img)
 
