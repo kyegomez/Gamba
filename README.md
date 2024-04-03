@@ -6,7 +6,7 @@ Implementation of "GAMBA: MARRY GAUSSIAN SPLATTING WITH MAMBA FOR SINGLE-VIEW 3D
 ![Diagram](diagram.png)
 
 ## install
-`$ pip intall gamba-torch`
+`$ pip install gamba-torch`
 
 ## usage
 ```python
